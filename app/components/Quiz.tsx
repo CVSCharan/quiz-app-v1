@@ -160,6 +160,14 @@ const questions: Question[] = [
   },
 ];
 
+const shuffleArray = (array: any[]): any[] => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array; // Return the shuffled array
+};
+
 const Quiz: React.FC = () => {
   const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
@@ -167,7 +175,8 @@ const Quiz: React.FC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
 
   const startGame = () => {
-    setShuffledQuestions(questions.sort(() => Math.random() - 0.5));
+    const shuffledQs = questions.sort(() => Math.random() - 0.5);
+    setShuffledQuestions(shuffledQs);
     setCurrentQuestionIndex(0);
     setShowStartButton(false);
     setSelectedAnswer(null);
@@ -199,12 +208,12 @@ const Quiz: React.FC = () => {
             Start
           </button>
         </div>
-      ) : (
+      ) : currentQuestion ? (
         <div id="question-container">
           <h1>Quiz App</h1> {/* Add your heading here */}
           <div id="question">{currentQuestion.question}</div>
           <div id="answer-buttons" className="btn-grid">
-            {currentQuestion.answers.map((answer, index) => (
+            {shuffleArray([...currentQuestion.answers]).map((answer, index) => (
               <button
                 key={index}
                 className={`btn ${
@@ -232,7 +241,7 @@ const Quiz: React.FC = () => {
             </button>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
