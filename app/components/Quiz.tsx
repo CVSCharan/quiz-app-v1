@@ -160,19 +160,11 @@ const questions: Question[] = [
   },
 ];
 
-const shuffleArray = (array: any[]): any[] => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array; // Return the shuffled array
-};
-
 const Quiz: React.FC = () => {
   const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [showStartButton, setShowStartButton] = useState<boolean>(true);
-  const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null); // Change to store index of selected answer
 
   const startGame = () => {
     const shuffledQs = questions.sort(() => Math.random() - 0.5);
@@ -187,8 +179,8 @@ const Quiz: React.FC = () => {
     setSelectedAnswer(null);
   };
 
-  const selectAnswer = (correct: boolean) => {
-    setSelectedAnswer(correct);
+  const selectAnswer = (answerIndex: number, correct: boolean) => {
+    setSelectedAnswer(answerIndex);
     setTimeout(() => {
       if (shuffledQuestions.length > currentQuestionIndex + 1) {
         setNextQuestion();
@@ -210,20 +202,19 @@ const Quiz: React.FC = () => {
         </div>
       ) : currentQuestion ? (
         <div id="question-container">
-          <h1>Quiz App</h1> {/* Add your heading here */}
           <div id="question">{currentQuestion.question}</div>
           <div id="answer-buttons" className="btn-grid">
-            {shuffleArray([...currentQuestion.answers]).map((answer, index) => (
+            {currentQuestion.answers.map((answer, index) => (
               <button
                 key={index}
                 className={`btn ${
-                  selectedAnswer !== null
+                  selectedAnswer !== null && selectedAnswer === index
                     ? answer.correct
                       ? "correct"
                       : "wrong"
                     : ""
                 }`}
-                onClick={() => selectAnswer(answer.correct)}
+                onClick={() => selectAnswer(index, answer.correct)}
                 disabled={selectedAnswer !== null}
               >
                 {answer.text}
